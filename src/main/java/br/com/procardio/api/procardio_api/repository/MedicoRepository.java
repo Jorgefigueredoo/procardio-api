@@ -12,7 +12,7 @@ public interface MedicoRepository extends JpaRepository <Medico, Long>{
     
     Optional <Medico> findByEmail(String email);
 
-    Optional <Medico> findByCrm(String email);
+    Optional <Medico> findByCrm(String crm);
 
     List <Medico> findByNomeContainingIgnoreCase(String nome);
 
