@@ -2,16 +2,15 @@ package br.com.procardio.api.procardio_api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class UsuarioDTO {
-    
+public record UsuarioDTO(
     @NotBlank
-    String nome;
+    String nome, 
     @NotBlank
-    String email;
-    @NotBlank   
-    String senha;
+    String email,
     @NotBlank
-    String Cep;
-    @NotBlank
-    String Complemento;
+    String senha,
+    String cep,
+    String numero,
+    String complemento
+) {
 }
