@@ -1,5 +1,6 @@
 package br.com.procardio.api.procardio_api.model;
 
+import br.com.procardio.api.procardio_api.dto.UsuarioDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -32,4 +33,23 @@ public class Usuario {
     @Embedded
     private Endereço endereço;
     
+     public Usuario toModel(UsuarioDTO dto) {
+        Usuario usuario = new Usuario();
+
+        usuario.setNome(dto.nome());
+        usuario.setEmail(dto.email());
+        usuario.setSenha(dto.senha());
+
+        if (dto.cep() != null || dto.numero() != null || dto.complemento() != null) {
+            Endereço endereco = new Endereço();
+
+            endereco.setCep(dto.cep());
+            endereco.setNumero(dto.numero());
+            endereco.setComplemento(dto.complemento());
+            
+            usuario.setEndereço(endereco);
+        }
+
+        return usuario;
+    }
 }
