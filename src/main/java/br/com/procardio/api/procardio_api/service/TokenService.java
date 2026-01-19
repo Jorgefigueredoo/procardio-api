@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Service
 public class TokenService {
 
-    @Value("${app.security.token.secret}")
+    @Value("${api.security.secret}")
     private String secret;
 
     // ✅ Novo: gera token usando email (String) - funciona com
