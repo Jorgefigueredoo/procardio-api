@@ -1,5 +1,8 @@
 package br.com.procardio.api.procardio_api.dto;
 
+import java.util.Set;
+
+import br.com.procardio.api.procardio_api.enums.Perfil;
 import jakarta.validation.constraints.NotBlank;
 
 public record UsuarioDTO(
@@ -11,6 +14,7 @@ public record UsuarioDTO(
     String senha,
     String cep,
     String numero,
-    String complemento
+    String complemento,
+    Set<Perfil> perfis
 ) {
 }
