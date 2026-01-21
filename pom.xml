@@ -5,7 +5,6 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Parent do Spring Boot -->
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -16,83 +15,73 @@
   <groupId>br.com.procardio.api</groupId>
   <artifactId>procardio-api</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-
   <name>procardio-api</name>
   <description>Serviço Web de Agendamentos de Consultas Médicas</description>
 
   <properties>
-    <!-- Versão do Java usada no projeto -->
     <java.version>17</java.version>
   </properties>
 
   <dependencies>
 
-    <!-- =========================
-         WEB (API REST)
-         ========================= -->
+    <!-- Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- =========================
-         BANCO DE DADOS / JPA
-         ========================= -->
+    <!-- JPA -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
 
-    <!-- Driver do MySQL (runtime) -->
+    <!-- MySQL -->
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- =========================
-         SEGURANÇA (Spring Security + JWT)
-         ========================= -->
+    <!-- Security -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 
-    <!-- JWT (Auth0) -->
+    <!-- OAuth2 Client (se você realmente for usar login social, etc.) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    </dependency>
+
+    <!-- JWT -->
     <dependency>
       <groupId>com.auth0</groupId>
       <artifactId>java-jwt</artifactId>
       <version>4.4.0</version>
     </dependency>
 
-    <!-- =========================
-         DOCUMENTAÇÃO (Swagger / OpenAPI)
-         ========================= -->
+    <!-- Swagger -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>2.5.0</version>
     </dependency>
 
-    <!-- =========================
-         VALIDAÇÃO (Bean Validation)
-         ========================= -->
+    <!-- Validation -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- =========================
-         EMAIL
-         ========================= -->
+    <!-- Mail -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
 
-    <!-- =========================
-         QUALIDADE DE VIDA (DEV)
-         ========================= -->
+    <!-- Devtools -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -100,25 +89,20 @@
       <optional>true</optional>
     </dependency>
 
-    <!-- Lombok (reduz boilerplate: getters/setters/constructors) -->
+    <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
 
-    <!-- =========================
-         TESTES
-         ========================= -->
-
-    <!-- Testes gerais (JUnit, Mockito, Spring Test, etc.) -->
+    <!-- Dependências de teste (sem comentários) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <!-- Testes do Spring Security -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
@@ -130,7 +114,6 @@
   <build>
     <plugins>
 
-      <!-- Compilador + Lombok como Annotation Processor -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -144,12 +127,10 @@
         </configuration>
       </plugin>
 
-      <!-- Plugin do Spring Boot -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <!-- Evita empacotar Lombok no jar final -->
           <excludes>
             <exclude>
               <groupId>org.projectlombok</groupId>
