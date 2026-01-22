@@ -6,6 +6,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 
+import br.com.procardio.api.procardio_api.model.Usuario;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -18,8 +20,7 @@ public class TokenService {
     @Value("${api.security.secret}")
     private String secret;
 
-    // ✅ Novo: gera token usando email (String) - funciona com
-    // authentication.getName()
+    // ✅ Gera token usando email (String)
     public String gerarToken(String email) {
         try {
             Algorithm algoritmo = Algorithm.HMAC256(secret);
@@ -33,6 +34,11 @@ public class TokenService {
         } catch (JWTCreationException ex) {
             throw new RuntimeException("Erro ao gerar token JWT", ex);
         }
+    }
+
+    // ✅ Overload: permite gerar token passando Usuario
+    public String gerarToken(Usuario usuario) {
+        return gerarToken(usuario.getEmail());
     }
 
     public String getSubject(String jwt) {
