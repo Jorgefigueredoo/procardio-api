@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/usuarios").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2.successHandler(googleLoginSuccessHandler()))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
