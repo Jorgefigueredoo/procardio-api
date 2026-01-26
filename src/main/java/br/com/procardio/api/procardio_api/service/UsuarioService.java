@@ -62,7 +62,6 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email).orElse(null);
     }
 
-    // ✅ RENOMEADO: antes era listarTodosUsuarios()
     public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
     }
