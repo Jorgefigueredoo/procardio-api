@@ -1,10 +1,14 @@
 package br.com.procardio.api.procardio_api.controller;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.procardio.api.procardio_api.dto.UsuarioDTO;
+import br.com.procardio.api.procardio_api.dto.UsuarioResponseDTO;
 import br.com.procardio.api.procardio_api.model.Usuario;
 import br.com.procardio.api.procardio_api.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -24,8 +29,11 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN', 'PACIENTE')")
-    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+    @PreAuthorize("hasAnyRole('ADMIN','PACIENTE')")
+    public ResponseEntity<Usuario> atualizarUsuario(
+            @PathVariable Long id,
+            @Valid @RequestBody UsuarioDTO usuarioDTO
+    ) {
         Usuario usuarioAtualizado = usuarioService.salvarUsuario(id, usuarioDTO);
 
         if (Objects.nonNull(usuarioAtualizado)) {
@@ -34,4 +42,14 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping
+    @CrossOrigin(origins = "http://localhost:8081")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
+        List<UsuarioResponseDTO> resp = usuarioService.listarUsuarios()
+                .stream()
+                .map(u -> new UsuarioResponseDTO(u)) // usa o construtor que recebe Usuario
+                .collect(Collectors.toList()); // compatível com Java 8/11
+
+        return ResponseEntity.ok(resp);
+    }
 }
