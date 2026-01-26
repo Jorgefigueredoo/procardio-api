@@ -47,7 +47,7 @@ public class AutenticacaoController {
     }
 
     // Endpoint para cadastrar um novo usuário
-    @PostMapping
+    @PostMapping("/cadastrar")
     public ResponseEntity<Usuario> cadastrarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         // Chama o serviço para salvar o novo usuário
         Usuario novoUsuario = usuarioService.salvarUsuario(usuarioDTO);
