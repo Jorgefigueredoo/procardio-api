@@ -49,7 +49,7 @@ public class Usuario implements UserDetails {
     private String senha;
 
     @Embedded // Incorporação do endereço como um componente embutido
-    private Endereço endereco;
+    private Endereco endereco;
 
     @ElementCollection(fetch = FetchType.EAGER)
     // Associação dos perfis de usuário
@@ -83,7 +83,7 @@ public class Usuario implements UserDetails {
 
         // Mapeamento do endereço se fornecido
         if (dto.cep() != null || dto.numero() != null || dto.complemento() != null) {
-            Endereço endereco = new Endereço();
+            Endereco endereco = new Endereco();
 
             endereco.setCep(dto.cep());
             endereco.setNumero(dto.numero());
