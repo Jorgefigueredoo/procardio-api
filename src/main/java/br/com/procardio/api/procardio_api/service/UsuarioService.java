@@ -27,7 +27,7 @@ public class UsuarioService {
     private ViaCepService viaCepService;
 
     public Usuario salvarUsuario(UsuarioDTO usuarioDTO) {
-        
+
         Usuario usuario = new Usuario();
         usuario = usuario.toModel(usuarioDTO);
 
@@ -79,17 +79,15 @@ public class UsuarioService {
     private void preencherCamposEndereco(Usuario usuario, UsuarioDTO usuarioDTO) {
         EnderecoDTO enderecoDTO = viaCepService.obterDadosEnderecoPeloCep(usuarioDTO.cep());
 
-        if (Objects.nonNull(enderecoDTO) && !enderecoDTO.erro()) {
-            Endereco endereco = usuario.getEndereco();
-            if (endereco == null) {
-                endereco = new Endereco();
-            }
+        if (Objects.nonNull(enderecoDTO)) {
+            Endereco endereco = new Endereco();
 
             endereco.setLogradouro(enderecoDTO.logradouro());
             endereco.setBairro(enderecoDTO.bairro());
             endereco.setCidade(enderecoDTO.localidade());
             endereco.setEstado(enderecoDTO.uf());
-
+            endereco.setCep(enderecoDTO.cep());
+            endereco.setComplemento(usuarioDTO.complemento());
             usuario.setEndereco(endereco);
         }
     }
