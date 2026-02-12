@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.procardio.api.procardio_api.dto.EnderecoDTO;
 import br.com.procardio.api.procardio_api.dto.UsuarioDTO;
+import br.com.procardio.api.procardio_api.dto.ViaCepDTO;
 import br.com.procardio.api.procardio_api.exceptions.UsuarioNaoEncontradoException;
 import br.com.procardio.api.procardio_api.model.Endereco;
 import br.com.procardio.api.procardio_api.model.Usuario;
@@ -27,15 +27,15 @@ public class UsuarioService {
     private ViaCepService viaCepService;
 
     public Usuario salvarUsuario(UsuarioDTO usuarioDTO) {
-
         Usuario usuario = new Usuario();
+
         usuario = usuario.toModel(usuarioDTO);
+        usuario.setSenha(passwordEncoder.encode(usuarioDTO.senha()));
 
         if (Objects.nonNull(usuarioDTO.cep()) || !usuarioDTO.cep().isBlank()) {
             preencherCamposEndereco(usuario, usuarioDTO);
         }
 
-        usuario.setSenha(passwordEncoder.encode(usuarioDTO.senha()));
         return usuarioRepository.save(usuario);
     }
 
@@ -44,51 +44,57 @@ public class UsuarioService {
 
         if (Objects.nonNull(usuario)) {
             usuario = usuario.toModel(usuarioDTO);
+
             usuario.setId(id);
-
-            // preenche endereço via CEP (se quiser usar)
-            preencherCamposEndereco(usuario, usuarioDTO);
-
             usuario.setSenha(passwordEncoder.encode(usuarioDTO.senha()));
+
+            if (Objects.nonNull(usuarioDTO.cep()) || !usuarioDTO.cep().isBlank()) {
+                preencherCamposEndereco(usuario, usuarioDTO);
+            }
+
             return usuarioRepository.save(usuario);
         }
 
         throw new UsuarioNaoEncontradoException(id);
     }
 
-    public void deletarUsuario(Long id) {
-        usuarioRepository.deleteById(id);
+    public List<Usuario> listarUsuarios() {
+        return usuarioRepository.findAll();
     }
 
     public Usuario buscarUsuarioPorId(Long id) {
         return usuarioRepository.findById(id).orElse(null);
     }
 
-    public List<Usuario> buscarUsuariosPorNome(String nome) {
-        return usuarioRepository.findByNomeContainingIgnoreCase(nome);
+    public void deletarUsuario(Long id) {
+        usuarioRepository.deleteById(id);
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
         return usuarioRepository.findByEmail(email).orElse(null);
     }
 
-    public List<Usuario> listarUsuarios() {
-        return usuarioRepository.findAll();
+    public List<Usuario> buscarUsuariosPorNome(String nome) {
+        return usuarioRepository.findByNomeContainingIgnoreCase(nome);
     }
 
     private void preencherCamposEndereco(Usuario usuario, UsuarioDTO usuarioDTO) {
-        EnderecoDTO enderecoDTO = viaCepService.obterDadosEnderecoPeloCep(usuarioDTO.cep());
+        ViaCepDTO enderecoDTO = viaCepService.obterDadosEnderecoPeloCep(usuarioDTO.cep());
 
         if (Objects.nonNull(enderecoDTO)) {
             Endereco endereco = new Endereco();
 
-            endereco.setLogradouro(enderecoDTO.logradouro());
             endereco.setBairro(enderecoDTO.bairro());
             endereco.setCidade(enderecoDTO.localidade());
             endereco.setEstado(enderecoDTO.uf());
+            endereco.setLogradouro(enderecoDTO.logradouro());
             endereco.setCep(enderecoDTO.cep());
+
+            endereco.setNumero(usuarioDTO.numero());
             endereco.setComplemento(usuarioDTO.complemento());
+
             usuario.setEndereco(endereco);
         }
     }
+
 }
