@@ -29,11 +29,8 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','PACIENTE')")
-    public ResponseEntity<Usuario> atualizarUsuario(
-            @PathVariable Long id,
-            @Valid @RequestBody UsuarioDTO usuarioDTO
-    ) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'PACIENTE')")
+    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuarioAtualizado = usuarioService.salvarUsuario(id, usuarioDTO);
 
         if (Objects.nonNull(usuarioAtualizado)) {
@@ -45,11 +42,15 @@ public class UsuarioController {
     @GetMapping
     @CrossOrigin(origins = "http://localhost:8081")
     public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
-        List<UsuarioResponseDTO> resp = usuarioService.listarUsuarios()
+        return ResponseEntity.ok(usuarioService.listarUsuarios()
                 .stream()
-                .map(u -> new UsuarioResponseDTO(u)) // usa o construtor que recebe Usuario
-                .collect(Collectors.toList()); // compatível com Java 8/11
+                .map(u -> u.toDTO())
+                .collect(Collectors.toList()));
+    }
 
-        return ResponseEntity.ok(resp);
+    @GetMapping("/{id}")
+    @CrossOrigin(origins = "http://localhost:8081")
+    public ResponseEntity<UsuarioResponseDTO> buscarUsuarioPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id).toDTO());
     }
 }
