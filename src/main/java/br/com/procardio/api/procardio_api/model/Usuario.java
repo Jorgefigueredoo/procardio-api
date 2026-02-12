@@ -1,6 +1,7 @@
 package br.com.procardio.api.procardio_api.model;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,7 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import br.com.procardio.api.procardio_api.dto.EnderecoDTO;
 import br.com.procardio.api.procardio_api.dto.UsuarioDTO;
+import br.com.procardio.api.procardio_api.dto.UsuarioResponseDTO;
 import br.com.procardio.api.procardio_api.enums.Perfil;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -29,10 +32,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "tb_usuarios")
-
 public class Usuario implements UserDetails {
 
     @Id
@@ -42,61 +44,43 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String senha;
 
-    @Embedded // Incorporação do endereço como um componente embutido
+    @Embedded
     private Endereco endereco;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    // Associação dos perfis de usuário
     @CollectionTable(name = "tb_perfis", joinColumns = @JoinColumn(name = "usuario_id"))
     @Enumerated(EnumType.STRING)
-    @Column(name = "perfis")
-    // Set de perfis associados ao usuário (SET não duplica perfis)
+    @Column(name = "perfil")
     private Set<Perfil> perfis;
 
-    // Método para adicionar um perfil ao usuário
-    public void adicionarPerfil(Perfil perfil) {
-        this.perfis.add(perfil);
-    }
-
-    // Método para converter UsuarioDTO em Usuario
     public Usuario toModel(UsuarioDTO dto) {
         Usuario usuario = new Usuario();
 
-        // Mapeamento dos campos do DTO para a entidade
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
         usuario.setSenha(dto.senha());
 
+        Set<Perfil> perfis = new HashSet<>();
+
         if (Objects.nonNull(dto.perfis())) {
             dto.perfis().stream().forEach(perfil -> {
                 if (Objects.nonNull(perfil)) {
-                    this.adicionarPerfil(perfil);
+                    perfis.add(perfil);
                 }
             });
         }
 
-        // Mapeamento do endereço se fornecido
-        if (dto.cep() != null || dto.numero() != null || dto.complemento() != null) {
-            Endereco endereco = new Endereco();
+        usuario.setPerfis(perfis);
 
-            endereco.setCep(dto.cep());
-            endereco.setNumero(dto.numero());
-            endereco.setComplemento(dto.complemento());
-
-            usuario.setEndereco(endereco);
-        }
-
-        // Retorna a entidade Usuario preenchida
         return usuario;
     }
 
-    // Implementação dos métodos da interface UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.perfis.stream()
@@ -104,40 +88,46 @@ public class Usuario implements UserDetails {
                 .collect(Collectors.toList());
     }
 
-    // Implementação do método getPassword
     @Override
     public @Nullable String getPassword() {
-        return this.senha;
+        return senha;
     }
 
-    // Implementação do método getUsername
     @Override
     public String getUsername() {
-        return this.email;
+        return email;
     }
 
-    // Implementação do método isAccountNonExpired (conta não expirada)
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    // Implementação do método isAccountNonLocked (conta não bloqueada)
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    // Implementação do método isCredentialsNonExpired (credenciais não expiradas)
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    // Implementação do método isEnabled (conta habilitada)
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public UsuarioResponseDTO toDTO() {
+        String cidade = null;
+        String estado = null;
+
+        if (Objects.nonNull(this.endereco)) {
+            cidade = endereco.getCidade();
+            estado = endereco.getEstado();
+        }
+
+        return new UsuarioResponseDTO(id, nome, email, new EnderecoDTO(cidade, estado));
     }
 
 }
